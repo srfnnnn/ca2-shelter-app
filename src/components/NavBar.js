@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 // import logo from "../photos/card-image.png";
 
 export default function Navbar() {
@@ -23,8 +23,12 @@ export default function Navbar() {
           Home
           </NavLink>
 
-          <NavLink to="/cards" className="nav">
-          Cards
+          <NavLink to="/listings" className="nav">
+          Shelters
+          </NavLink>
+
+          <NavLink to="/admin-login" className="nav">
+          Admin Login
           </NavLink>
 
         </nav>

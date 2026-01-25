@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getListingById, updateListing } from "./api";
+import { getListingById, updateListing } from "../services/api";
 
 export default function EditShelter() {
   const { id } = useParams(); // get the shelter ID from URL
