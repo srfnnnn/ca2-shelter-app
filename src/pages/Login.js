@@ -10,24 +10,27 @@ export default function Login() {
   const [busy, setBusy] = useState(false); 
  
   async function handleSubmit(e) { 
-    e.preventDefault(); 
-    setBusy(true); 
-    setError(""); 
- 
-    try { 
-      const res = await login({ email, password }); 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`); 
-      const data = await res.json(); 
- 
-      localStorage.setItem("token", data.token);  
-      navigate("/");  
-    } catch (e2) { 
-      console.error(e2); 
-      setError("Login failed"); 
-    } finally { 
-      setBusy(false); 
-    } 
+  e.preventDefault(); 
+  setBusy(true); 
+  setError(""); 
+
+  try { 
+    const data = await login({ email, password });
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user)); // must exist
+
+    // Redirect
+    navigate("/listings");
+
+  } catch (err) { 
+    console.error(err); 
+    setError("Login failed: " + err.message); 
+  } finally { 
+    setBusy(false); 
   } 
+}
+
  
   return ( 
     <main>

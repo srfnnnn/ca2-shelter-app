@@ -7,6 +7,7 @@
 //  */
 
 const API_URL = process.env.REACT_APP_API_URL;
+console.log("API_URL:", API_URL);
 
 function authHeader() { 
   const token = localStorage.getItem("token"); 
@@ -15,28 +16,49 @@ function authHeader() {
  
 
 export async function login(credentials) {
-  return fetch(`${API_URL}/login`, {
+  const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Login failed: ${errText}`);
+  }
+
+  const data = await res.json(); // ✅ parse JSON here
+  return data;
 }
 
 // ------------------- LISTINGS -------------------
 
 /** Get all listings */
 export async function getListings() {
-  const res = await fetch(`${API_URL}/listings`);
+  const res = await fetch(`${API_URL}/listings`, {
+    headers: authHeader(),
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
 /** Get one listing by ID */
 export async function getListingById(id) {
-  const res = await fetch(`${API_URL}/listings/${id}`);
-  if (!res.ok) throw new Error(`Failed to fetch listing ${id}`);
+  const res = await fetch(`${API_URL}/admin/listings/${id}`, {
+    headers: {
+      ...authHeader(), // include token
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to fetch listing");
+  }
+
   return res.json();
 }
+
+
 
 /** Add a new listing (admin) */
 export async function addListing(listing) {
@@ -63,6 +85,7 @@ export async function updateListing(id, listing) {
   });
   return res.json();
 }
+
 
 /** Delete a listing (admin) */
 export async function deleteListing(id) {
