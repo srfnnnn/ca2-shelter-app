@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import ShelterList from "./pages/shelterList";
 import AddShelter from "./pages/AddListing";
 import EditShelter from "./pages/EditShelter";
-import AdminLogin from "./pages/AdminLogin";
+import Login from "./pages/Login";
 import "./App.css";
 
 export default function App() {
@@ -14,7 +14,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<ShelterList />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
+         <Route path="/login" element={<Login />} />
         <Route path="/admin/listings" element={<AddShelter />} />
         <Route path="/admin/listings/:id" element={<EditShelter />} />
        

@@ -1,12 +1,26 @@
-/**
- * API Service for Shelters App (React)
- *
- * 1) Create `.env` at project root
- * 2) Set: REACT_APP_API_URL=https://YOUR-BACKEND.onrender.com
- * 3) Restart `npm start`
- */
+// /**
+//  * API Service for Shelters App (React)
+//  *
+//  * 1) Create `.env` at project root
+//  * 2) Set: REACT_APP_API_URL=https://YOUR-BACKEND.onrender.com
+//  * 3) Restart `npm start`
+//  */
 
 const API_URL = process.env.REACT_APP_API_URL;
+
+function authHeader() { 
+  const token = localStorage.getItem("token"); 
+  return token ? { Authorization: `Bearer ${token}` } : {}; 
+} 
+ 
+
+export async function login(credentials) {
+  return fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+}
 
 // ------------------- LISTINGS -------------------
 
@@ -30,6 +44,7 @@ export async function addListing(listing) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...authHeader()
     },
     body: JSON.stringify(listing),
   });
@@ -42,6 +57,7 @@ export async function updateListing(id, listing) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...authHeader()
     },
     body: JSON.stringify(listing),
   });
@@ -52,6 +68,9 @@ export async function updateListing(id, listing) {
 export async function deleteListing(id) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "DELETE",
+    headers: {
+      ...authHeader(),
+    },
   });
   return res.json();
 }
@@ -76,22 +95,23 @@ export async function updateRequestStatus(id, status) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...authHeader(),
     },
     body: JSON.stringify({ status }),
   });
   return res.json();
 }
 
-// ------------------- ADMIN LOGIN -------------------
+// // ------------------- ADMIN LOGIN -------------------
 
-/** Admin login */
-export async function adminLogin(credentials) {
-  const res = await fetch(`${API_URL}/admin/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(credentials),
-  });
-  return res.json();
-}
+// /** Admin login */
+// export async function adminLogin(credentials) {
+//   const res = await fetch(`${API_URL}/admin/login`, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify(credentials),
+//   });
+//   return res.json();
+// }
