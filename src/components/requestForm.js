@@ -1,66 +1,70 @@
 import { useState } from "react";
-import { requestListing } from "./api";
+import { useNavigate } from "react-router-dom";
+import { requestListing } from "../services/api";
 
-export default function RequestForm({ shelterId, onRequestSubmitted }) {
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
-  const [reason, setReason] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function RequestForm({ id, onClose, onSuccess }) {
+  const navigate = useNavigate(); 
+  const [requestedName, setRequestedName] = useState('');
+  const [requestedContact, setRequestedContact] = useState('');
+  const [reason, setReason] = useState('');
+  const [requesting, setRequesting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !contact || !reason) {
-      alert("Please fill in all fields.");
-      return;
-    }
-
-    setLoading(true);
+    setRequesting(true);
     try {
-      const request = {
-        requested_name: name,
-        requested_contact: contact,
-        reason: reason,
-        status: "Pending"
-      };
-      const res = await requestListing(shelterId, request);
-      if (res.success) {
-        alert("Request submitted successfully!");
-        onRequestSubmitted(); // callback to update parent UI (like changing button to "Pending")
-        setName("");
-        setContact("");
-        setReason("");
-      } else {
-        alert("Failed to submit request. Try again.");
-      }
+      const data = await requestListing(id, {
+        requested_name: requestedName,
+        requested_contact: requestedContact,
+        reason
+      });
+
+      if (!data.success) throw new Error(data.message || 'Request failed');
+
+      alert(data.message);
+
+      // Notify parent to update status
+      if (onSuccess) onSuccess("Pending");
+
+      // Redirect back to listings page
+      navigate("/listings"); // <-- redirect
+
+      // Optionally close the form
+      if (onClose) onClose();
+
     } catch (err) {
       console.error(err);
-      alert("Error submitting request.");
+      alert(err.message);
     } finally {
-      setLoading(false);
+      setRequesting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="request-form">
       <input
-        type="text"
+        value={requestedName}
+        onChange={e => setRequestedName(e.target.value)}
         placeholder="Your Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        required
       />
       <input
-        type="text"
-        placeholder="Contact Number / Email"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
+        value={requestedContact}
+        onChange={e => setRequestedContact(e.target.value)}
+        placeholder="Contact Info"
+        required
       />
       <textarea
-        placeholder="Reason for stay"
         value={reason}
-        onChange={(e) => setReason(e.target.value)}
+        onChange={e => setReason(e.target.value)}
+        placeholder="Reason"
+        required
       />
-      <button type="submit" disabled={loading}>
-        {loading ? "Submitting..." : "Request Stay"}
+      <button type="submit" disabled={requesting}>
+        {requesting ? 'Submitting...' : 'Submit Request'}
+      </button>
+      <button type="button" onClick={onClose} disabled={requesting}>
+        Cancel
       </button>
     </form>
   );

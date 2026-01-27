@@ -5,6 +5,8 @@ export default function Home() {
   const [shelter, setShelter] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+  
   useEffect(() => {
     fetch("https://c219-shelterwebappservice.onrender.com/listings")
       .then((res) => res.json())
@@ -20,13 +22,17 @@ export default function Home() {
   return (
     <div className="home">
       <div className="headerHome">
-        <h1>Manage all your cards in one secure place.</h1>
-        <p>Track spending, organize cards, and stay in control of your finances with ease</p>
+        <h1>Find a safe and welcoming place to stay, even if it’s just for a short time. </h1>
+        <p>Explore available temporary shelters near you and get the support you need, when you need it.</p>
       </div>
-
-      <div className="add">
-        <Link to="/addShelter" className="addbutton">Add new listing</Link>
-      </div>
+      
+      {token && (
+        <div className="add">
+          <Link to="/admin/listings" className="addbutton">
+            Add new listing
+          </Link>
+        </div>
+      )}
 
       <h1 className="title">Temporary shelters</h1>
 
@@ -42,11 +48,10 @@ export default function Home() {
         {!loading &&
           shelter.map((shelter) => (
             <div className="card" key={shelter.id}>
-              {/* <img
-              src={shelter.card_pic}
-              alt={shelter.card_name}
-              className="card-image"
-              /> */}
+              <img
+              src={shelter.listing_pic}
+              alt={shelter.listing_name}
+              />
 
               <h3>{shelter.listing_type}</h3>
 

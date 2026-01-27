@@ -1,11 +1,3 @@
-// /**
-//  * API Service for Shelters App (React)
-//  *
-//  * 1) Create `.env` at project root
-//  * 2) Set: REACT_APP_API_URL=https://YOUR-BACKEND.onrender.com
-//  * 3) Restart `npm start`
-//  */
-
 const API_URL = process.env.REACT_APP_API_URL;
 console.log("API_URL:", API_URL);
 
@@ -13,6 +5,7 @@ function authHeader() {
   const token = localStorage.getItem("token"); 
   return token ? { Authorization: `Bearer ${token}` } : {}; 
 } 
+
  
 
 export async function login(credentials) {
@@ -59,48 +52,45 @@ export async function getListingById(id) {
 }
 
 
-
-/** Add a new listing (admin) */
-export async function addListing(listing) {
+//ADDING (ADMIN_ONLY)
+export async function addListing(payload) {
   const res = await fetch(`${API_URL}/admin/listings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader()
+      ...authHeader(), 
     },
-    body: JSON.stringify(listing),
+    body: JSON.stringify(payload),
   });
   return res.json();
 }
 
-/** Update a listing (admin) */
-export async function updateListing(id, listing) {
+//EDITING (ADMIN_ONLY)
+export async function updateListing(id, payload) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader()
-    },
-    body: JSON.stringify(listing),
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify(payload),
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to update listing");
+  return data;
 }
 
-
-/** Delete a listing (admin) */
+//DELETE (ADMIN_ONLY)
 export async function deleteListing(id) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "DELETE",
-    headers: {
-      ...authHeader(),
-    },
+    headers: { ...authHeader() },
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to delete listing");
+  return data;
 }
+
 
 // ------------------- REQUESTS -------------------
 
-/** Submit a request for a listing (user) */
 export async function requestListing(id, request) {
   const res = await fetch(`${API_URL}/request/${id}`, {
     method: "PUT",
@@ -112,10 +102,11 @@ export async function requestListing(id, request) {
   return res.json();
 }
 
+
 /** Update request status (admin) */
 export async function updateRequestStatus(id, status) {
-  const res = await fetch(`${API_URL}/admin/request/${id}`, {
-    method: "PUT",
+  const res = await fetch(`${API_URL}/admin/requests/${id}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
       ...authHeader(),
@@ -124,17 +115,3 @@ export async function updateRequestStatus(id, status) {
   });
   return res.json();
 }
-
-// // ------------------- ADMIN LOGIN -------------------
-
-// /** Admin login */
-// export async function adminLogin(credentials) {
-//   const res = await fetch(`${API_URL}/admin/login`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(credentials),
-//   });
-//   return res.json();
-// }

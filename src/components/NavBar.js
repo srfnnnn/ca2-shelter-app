@@ -13,15 +13,6 @@ export default function Navbar() {
   return (
     <header className="header">
 
-      {/* <Link to="/">
-        <img
-          className="logo"
-          src={logo}
-          alt="Card logo"
-          title="Home"
-        />
-      </Link> */}
-
       <nav className="navbar">
           <NavLink to="/" className="nav">
           Home

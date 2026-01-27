@@ -9,7 +9,7 @@ export default function Login() {
   const [error, setError] = useState(""); 
   const [busy, setBusy] = useState(false); 
  
-  async function handleSubmit(e) { 
+  async function handleSubmit(e) {    
   e.preventDefault(); 
   setBusy(true); 
   setError(""); 
@@ -18,7 +18,6 @@ export default function Login() {
     const data = await login({ email, password });
 
     localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user)); // must exist
 
     // Redirect
     navigate("/listings");
