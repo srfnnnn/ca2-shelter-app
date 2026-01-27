@@ -5,15 +5,34 @@ export default function AdminRequests() {
   const { id } = useParams(); // match URL param
   const [requests, setRequests] = useState([]);
 
+  // useEffect(() => {
+  //   fetch(`https://c219-shelterwebappservice.onrender.com/admin/requests/${id}`)
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       if (data.success) setRequests(data.requests);
+  //       else alert(data.message || "Failed to fetch requests");
+  //     })
+  //     .catch(err => alert("Error: " + err.message));
+  // }, [id]);
+
   useEffect(() => {
-    fetch(`https://c219-shelterwebappservice.onrender.com/admin/requests/${id}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setRequests(data.requests);
-        else alert(data.message || "Failed to fetch requests");
-      })
-      .catch(err => alert("Error: " + err.message));
-  }, [id]);
+  const token = localStorage.getItem("token");
+  if (!token) return alert("You must be logged in");
+
+  fetch(`https://c219-shelterwebappservice.onrender.com/admin/requests/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) setRequests(data.requests);
+      else alert(data.message || "Failed to fetch requests");
+    })
+    .catch(err => alert("Error: " + err.message));
+}, [id]);
+
 
   return (
     <div>

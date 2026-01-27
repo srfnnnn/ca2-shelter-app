@@ -20,7 +20,7 @@ export default function App() {
         <Route path="/admin/listings" element={<AddShelter />} />
         <Route path="/admin/listings/:id" element={<EditShelter />} />
         <Route path="/request/:id" element={<RequestForm />} />
-        <Route path="/admin/requests/:listingId" element={<AdminRequests />} />
+        <Route path="/admin/requests/:id" element={<AdminRequests />} />
        
       </Routes>
     </BrowserRouter>
