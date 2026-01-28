@@ -2,94 +2,103 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { addListing } from "../services/api";
 
-export default function AddListing({ isAdmin }) {
+function isAdminFromToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
+export default function AddListing() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const isAdmin = token ? isAdminFromToken(token) : false;
 
   const [values, setValues] = useState({
     listing_type: "Host",
     listing_name: "",
     area: "",
     price: "",
-    max_duration: "",
+    duration_hours: "",
     rules: "",
-    verified: 0,
+    verified: "No",
+    listing_pic: "",
   });
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Check login & admin
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
+    if (!token) navigate("/login");
+    else if (!isAdmin) navigate("/");
+  }, [token, isAdmin, navigate]);
+
+  function handleChange(e) {
+    const { name, value, type, checked } = e.target;
+
+    if (type === "checkbox" && name === "verified") {
+      setValues((prev) => ({ ...prev, verified: checked ? "Yes" : "No" }));
       return;
     }
 
-    if (isAdmin === false) {
-      navigate("/");
-    }
-  }, [isAdmin, navigate]);
-
-  // Show loading if admin status unknown
-  if (isAdmin === null) return <p>Checking permissions...</p>;
-  if (isAdmin === false) return <p>You are not authorized to access this page.</p>;
-
-  // Handle input changes
-  function handleChange(e) {
-    const { name, value, type, checked } = e.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? (checked ? 1 : 0) : value,
-    }));
+    setValues((prev) => ({ ...prev, [name]: value }));
   }
 
-  // Handle form submit
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
 
-    // Basic validation
     if (!values.listing_name.trim() || !values.area.trim()) {
       setError("Listing name and area are required.");
       return;
     }
 
+    const durationNumber =
+      values.duration_hours === "" ? 0 : Number(values.duration_hours);
+
+    const payload = {
+      listing_type: values.listing_type,
+      listing_name: values.listing_name.trim(),
+      area: values.area.trim(),
+      price: values.price === "" ? 0 : Number(values.price),
+
+      duration_hours: durationNumber,
+      max_duration: durationNumber, // send both, backend can use either
+
+      rules: values.rules,
+      verified: values.verified, // "Yes"/"No"
+      status: "Available",
+      listing_pic: values.listing_pic?.trim() || "",
+    };
+
     try {
       setBusy(true);
-
-      const payload = {
-        ...values,
-        listing_name: values.listing_name.trim(),
-        area: values.area.trim(),
-        price: values.price === "" ? 0 : Number(values.price),
-        max_duration: values.max_duration === "" ? 0 : Number(values.max_duration),
-        verified: Number(values.verified),
-        status: "active", 
-        listing_pic: values.listing_pic?.trim() || "",
-
-      };
-
-      console.log("Submitting payload:", payload);
-
-      const response = await addListing(payload);
-      console.log("Response from backend:", response);
-
-      navigate("/listings"); // redirect on success
+      await addListing(payload);
+      navigate("/listings");
     } catch (err) {
-      console.error("Error adding listing:", err);
-      setError(err.message || "Something went wrong");
+      setError(err.message || "Server error - could not add listing");
     } finally {
       setBusy(false);
     }
   }
+
+  if (!token || !isAdmin) return null;
 
   return (
     <div style={{ maxWidth: 520, margin: "0 auto" }}>
       <h2>Add Listing (Admin)</h2>
 
       {error && (
-        <div style={{ padding: 10, marginBottom: 12, border: "1px solid #ccc", color: "red" }}>
+        <div
+          style={{
+            padding: 10,
+            marginBottom: 12,
+            border: "1px solid #ccc",
+            color: "red",
+          }}
+        >
           {error}
         </div>
       )}
@@ -115,7 +124,6 @@ export default function AddListing({ isAdmin }) {
             value={values.listing_name}
             onChange={handleChange}
             style={{ display: "block", width: "100%", marginBottom: 10 }}
-            placeholder="e.g. Yishun Community Host Room"
           />
         </label>
 
@@ -126,7 +134,6 @@ export default function AddListing({ isAdmin }) {
             value={values.area}
             onChange={handleChange}
             style={{ display: "block", width: "100%", marginBottom: 10 }}
-            placeholder="e.g. Yishun / Woodlands"
           />
         </label>
 
@@ -138,19 +145,17 @@ export default function AddListing({ isAdmin }) {
             value={values.price}
             onChange={handleChange}
             style={{ display: "block", width: "100%", marginBottom: 10 }}
-            placeholder="e.g. 0"
           />
         </label>
 
         <label>
-          Max Duration (days)
+          Duration (hours)
           <input
             type="number"
-            name="max_duration"
-            value={values.max_duration}
+            name="duration_hours"
+            value={values.duration_hours}
             onChange={handleChange}
             style={{ display: "block", width: "100%", marginBottom: 10 }}
-            placeholder="e.g. 14"
           />
         </label>
 
@@ -161,20 +166,19 @@ export default function AddListing({ isAdmin }) {
             value={values.rules}
             onChange={handleChange}
             style={{ display: "block", width: "100%", marginBottom: 10 }}
-            placeholder="e.g. No smoking, curfew 10pm"
             rows={4}
           />
         </label>
 
         <label>
-          Image 
+          Image (URL)
           <input
-          type="text"
-          name="listing_pic"
-          value={values.listing_pic || ""}
-          onChange={handleChange}
-          style={{ display: "block", width: "100%", marginBottom: 10 }}
-          placeholder="e.g. https://example.com/image.jpg"
+            type="text"
+            name="listing_pic"
+            value={values.listing_pic}
+            onChange={handleChange}
+            style={{ display: "block", width: "100%", marginBottom: 10 }}
+            placeholder="https://example.com/image.jpg"
           />
         </label>
 
@@ -182,7 +186,7 @@ export default function AddListing({ isAdmin }) {
           <input
             type="checkbox"
             name="verified"
-            checked={Number(values.verified) === 1}
+            checked={values.verified === "Yes"}
             onChange={handleChange}
           />
           Verified
