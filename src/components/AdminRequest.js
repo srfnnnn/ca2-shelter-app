@@ -36,9 +36,9 @@ export default function AdminRequests() {
 
   return (
     <div>
-      <h2>Requests for Listing {id}</h2>
-      <Link to="/listings">Back to Listings</Link>
-      <ul>
+      <h1 className="title">Requests for Listing {id}</h1>
+      <Link to="/listings" className="align">Back to Listings</Link>
+      <ul className="align">
         {requests.length === 0 && <li>No requests yet.</li>}
         {requests.map(r => (
           <li key={r.id}>

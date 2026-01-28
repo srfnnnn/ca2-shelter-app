@@ -48,7 +48,7 @@ export default function ShelterList() {
     fetchShelters();
   }, []); // fetch once on mount
 
-  if (loading) return <p>Loading shelters...</p>;
+  if (loading) return <p className="loading">Loading shelters...</p>;
 
   return (
     <main>

@@ -41,10 +41,10 @@ export default function Shelter({ shelter, busy, isAdmin, onDelete }) {
       {isAdmin && (
         <div>
           <Link to={`/admin/listings/${shelter.id}`}>
-            <button>Edit</button>
+            <button className="clickbuttons">Edit</button>
           </Link>
 
-          <button onClick={() => navigate(`/admin/requests/${shelter.id}`)}>
+          <button className="clickbuttons" onClick={() => navigate(`/admin/requests/${shelter.id}`)}>
             View Requests
           </button>
 

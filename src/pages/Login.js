@@ -22,9 +22,9 @@ export default function Login() {
     // Redirect
     navigate("/listings");
 
-  } catch (err) { 
-    console.error(err); 
-    setError("Login failed: " + err.message); 
+  } catch (error) { 
+    console.error(error); 
+    setError("Login failed: " + error.message); 
   } finally { 
     setBusy(false); 
   } 
@@ -33,7 +33,7 @@ export default function Login() {
  
   return ( 
     <main>
-      <h2>Login</h2>
+      <h2 className="title">Login</h2>
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input value={email} onChange={(e) => setEmail(e.target.value)} />

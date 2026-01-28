@@ -69,11 +69,11 @@ export default function EditShelter() {
     }
   };
 
-  if (loading) return <p>Loading listing...</p>;
+  if (loading) return <p className="loading">Loading listing...</p>;
 
   return (
     <main>
-      <h1>Edit Listing</h1>
+      <h1 className="title">Edit Listing</h1>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 

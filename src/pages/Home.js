@@ -39,7 +39,7 @@ export default function Home() {
       {/* listing Section */}
       <div className="cards">
 
-        {loading && <p>Loading listings...</p>}
+        {loading && <p className="loading">Loading listings...</p>}
 
         {!loading && shelter.length === 0 && (
           <p>No lisitng found. Add one to get started!</p>
