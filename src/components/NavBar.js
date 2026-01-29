@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from "react-router-dom";
-// import logo from "../photos/card-image.png";
 
 export default function Navbar() {
   const token = localStorage.getItem("token");

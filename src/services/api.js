@@ -1,5 +1,6 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
+//FOR ADMIN - PROTECTS DATA 
 function authHeader() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
@@ -49,6 +50,7 @@ export async function addListing(payload) {
   return p.data;
 }
 
+//
 export async function getListingById(id) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     headers: { ...authHeader() },
@@ -71,6 +73,7 @@ export async function updateListing(id, payload) {
   return p.data;
 }
 
+//DELETE LISTING (ADMIN)
 export async function deleteListing(id) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "DELETE",
@@ -95,7 +98,7 @@ export async function requestListing(id, request) {
   return p.data;
 }
 
-// OPTIONAL admin helper (if your backend supports it)
+// ADMIN TO VIEW REQUEST STAY APPLICATION
 export async function updateRequestStatus(id, status) {
   const res = await fetch(`${API_URL}/admin/requests/${id}`, {
     method: "PUT",

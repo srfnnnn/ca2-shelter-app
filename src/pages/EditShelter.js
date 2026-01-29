@@ -110,7 +110,7 @@ export default function EditShelter() {
         </label>
 
         <label>
-          Max Duration:
+          Duration (days):
           <input
             name="max_duration"
             type="number"

@@ -149,7 +149,7 @@ export default function AddListing() {
         </label>
 
         <label>
-          Duration (hours)
+          Duration (days)
           <input
             type="number"
             name="duration_hours"

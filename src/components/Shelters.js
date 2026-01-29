@@ -12,11 +12,11 @@ export default function Shelter({ shelter, busy, isAdmin, onDelete }) {
       <h1 className="headline">{shelter.listing_name}</h1>
       <p className="headline">Location: {shelter.area}</p>
       <p className="headline">Price: {shelter.price}</p>
-      <p className="headline">Duration: {shelter.max_duration}</p>
+      <p className="headline">Duration (days): {shelter.max_duration}</p>
       <p className="headline">Rules: {shelter.rules}</p>
       <p className="headline">Verification: {shelter.verified}</p>
 
-      {/* Guest view */}
+      {/* guest view */}
       {!isAdmin && status === "Available" && (
         <button className="clickRequest" onClick={() => setShowForm(true)}>
           Request Stay
@@ -37,7 +37,7 @@ export default function Shelter({ shelter, busy, isAdmin, onDelete }) {
         </button>
       )}
 
-      {/* Admin view */}
+      {/* admin view  */}
       {isAdmin && (
         <div>
           <Link to={`/admin/listings/${shelter.id}`}>

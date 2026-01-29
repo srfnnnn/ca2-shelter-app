@@ -57,7 +57,7 @@ export default function Home() {
               <h5>Price: {s.price}</h5>
 
               {/* FIX: support both field names */}
-              <p>Duration: {s.max_duration ?? s.duration_hours}</p>
+              <p>Duration (days): {s.max_duration ?? s.duration_hours}</p>
 
               <p>Rules: {s.rules}</p>
               <p>Verification: {s.verified}</p>
