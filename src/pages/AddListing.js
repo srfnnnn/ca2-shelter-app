@@ -59,18 +59,23 @@ export default function AddListing() {
       values.duration_hours === "" ? 0 : Number(values.duration_hours);
 
     const payload = {
+  
       listing_type: values.listing_type,
+  
       listing_name: values.listing_name.trim(),
+  
       area: values.area.trim(),
+  
       price: values.price === "" ? 0 : Number(values.price),
-
-      duration_hours: durationNumber,
-      max_duration: durationNumber, // send both, backend can use either
-
+  
+      max_duration: durationNumber, // backend column
+  
       rules: values.rules,
-      verified: values.verified, // "Yes"/"No"
-      status: "Available",
+  
+      verified: values.verified,    // "Yes" or "No"
+  
       listing_pic: values.listing_pic?.trim() || "",
+
     };
 
     try {
