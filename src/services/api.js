@@ -1,117 +1,109 @@
 const API_URL = process.env.REACT_APP_API_URL;
-console.log("API_URL:", API_URL);
 
-function authHeader() { 
-  const token = localStorage.getItem("token"); 
-  return token ? { Authorization: `Bearer ${token}` } : {}; 
-} 
+function authHeader() {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
- 
+async function parseResponse(res) {
+  const text = await res.text();
+  try {
+    const json = text ? JSON.parse(text) : {};
+    return { ok: res.ok, status: res.status, data: json, raw: text };
+  } catch {
+    return { ok: res.ok, status: res.status, data: null, raw: text };
+  }
+}
 
+// AUTH
 export async function login(credentials) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Login failed: ${errText}`);
-  }
 
-  const data = await res.json(); // ✅ parse JSON here
-  return data;
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Login failed (HTTP ${p.status})`);
+  return p.data;
 }
 
-// ------------------- LISTINGS -------------------
-
-/** Get all listings */
+// LISTINGS (public)
 export async function getListings() {
-  const res = await fetch(`${API_URL}/listings`, {
-    headers: authHeader(),
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+  const res = await fetch(`${API_URL}/listings`);
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Failed to load listings (HTTP ${p.status})`);
+  return p.data;
 }
 
-/** Get one listing by ID */
-export async function getListingById(id) {
-  const res = await fetch(`${API_URL}/admin/listings/${id}`, {
-    headers: {
-      ...authHeader(), // include token
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || "Failed to fetch listing");
-  }
-
-  return res.json();
-}
-
-
-//ADDING (ADMIN_ONLY)
+// LISTINGS (admin)
 export async function addListing(payload) {
   const res = await fetch(`${API_URL}/admin/listings`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader(), 
-    },
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(payload),
   });
-  return res.json();
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Could not add listing (HTTP ${p.status})`);
+  return p.data;
 }
 
-//EDITING (ADMIN_ONLY)
+export async function getListingById(id) {
+  const res = await fetch(`${API_URL}/admin/listings/${id}`, {
+    headers: { ...authHeader() },
+  });
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Failed to fetch listing (HTTP ${p.status})`);
+  return p.data;
+}
+
 export async function updateListing(id, payload) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(payload),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to update listing");
-  return data;
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Failed to update listing (HTTP ${p.status})`);
+  return p.data;
 }
 
-//DELETE (ADMIN_ONLY)
 export async function deleteListing(id) {
   const res = await fetch(`${API_URL}/admin/listings/${id}`, {
     method: "DELETE",
     headers: { ...authHeader() },
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || "Failed to delete listing");
-  return data;
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Failed to delete listing (HTTP ${p.status})`);
+  return p.data;
 }
 
-
-// ------------------- REQUESTS -------------------
-
+// REQUEST (guest)
 export async function requestListing(id, request) {
   const res = await fetch(`${API_URL}/request/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   });
-  return res.json();
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Request failed (HTTP ${p.status})`);
+  return p.data;
 }
 
-
-/** Update request status (admin) */
+// OPTIONAL admin helper (if your backend supports it)
 export async function updateRequestStatus(id, status) {
   const res = await fetch(`${API_URL}/admin/requests/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeader(),
-    },
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify({ status }),
   });
-  return res.json();
+
+  const p = await parseResponse(res);
+  if (!p.ok) throw new Error(p.data?.message || p.raw || `Failed to update request (HTTP ${p.status})`);
+  return p.data;
 }
