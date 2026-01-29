@@ -8,6 +8,9 @@ export default function Home() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+
+    document.title = "Temporary Shelter App";
+
     fetch("https://c219-shelterwebappservice.onrender.com/listings")
       .then((res) => res.json())
       .then((data) => {
