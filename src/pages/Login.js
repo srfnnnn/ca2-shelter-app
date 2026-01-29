@@ -34,6 +34,8 @@ export default function Login() {
   return ( 
     <main>
       <h2 className="title">Login</h2>
+      {error && <p className="error">{error}</p>}
+      
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input value={email} onChange={(e) => setEmail(e.target.value)} />
