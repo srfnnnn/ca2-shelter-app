@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import RequestForm from "../components/RequestForm";
+import RequestForm from "../components/requestForm";
 
 export default function Shelter({ shelter, busy, isAdmin, onDelete }) {
   const [status, setStatus] = useState(shelter.status || "Available");

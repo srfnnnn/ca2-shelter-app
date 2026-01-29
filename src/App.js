@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import ShelterList from "./pages/shelterList";
 import AddShelter from "./pages/AddListing";
 import EditShelter from "./pages/EditShelter";
-import RequestForm from "./components/RequestForm";
+import RequestForm from "./components/requestForm";
 import AdminRequests from "./components/AdminRequest";
 import Login from "./pages/Login";
 import "./App.css";
